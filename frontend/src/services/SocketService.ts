@@ -1,24 +1,21 @@
 
 export class SocketService {
     ws: WebSocket;
+    listeners: ((message: string) => void)[] = []
 
     constructor(url: string) {
-        //this.ws = new WebSocket('ws://localhost:8080/user');
-        // this.ws = new WebSocket('ws://localhost:8080/user', 'echo-protocol');
-        console.log('Före')
         this.ws = new WebSocket('ws://localhost:8080/user');
-        console.log('Efter')
-        //  ((this: WebSocket, ev: MessageEvent) => any) | null;
+
         this.ws.onmessage = (ev: MessageEvent): void => {
-            console.log("onmessage")
-            console.log("data.data = " + JSON.stringify(ev.data))
+            this.listeners.forEach(listener => {
+                listener(ev.data);
+            });
         }
 
         // onerror: ((this: WebSocket, ev: Event) => any) | null;
         this.ws.onerror = (ev: Event): void => {
             console.log("onerror: " + JSON.stringify(ev))
         }
-
 
         // onclose: ((this: WebSocket, ev: CloseEvent) => any) | null;
         this.ws.onclose = (ev: CloseEvent): void => {
@@ -31,5 +28,16 @@ export class SocketService {
         }
     }
 
+    addListener(listener: (message: string) => void) {
+        this.listeners.push(listener);
+    }
+
+    sendMessage(message: string): void {
+        this.ws.send(message);
+    }
+
+    isActive(): boolean {
+        return this.ws !== undefined
+    }
 
 }
