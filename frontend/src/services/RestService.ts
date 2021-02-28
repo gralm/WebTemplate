@@ -1,35 +1,31 @@
 
 export class RestService {
-    url: string = "asdf";
-    xhttp: XMLHttpRequest;
+    basicUrl: string;
 
     constructor(url: string) {
-        this.url = url;
-        this.xhttp = new XMLHttpRequest();
-        this.xhttp.onreadystatechange = function (this: XMLHttpRequest, ev: Event) {
-            console.log(this.readyState + ", " +  this.status);
-            if (this.readyState == 4 && this.status == 200) {
-                console.log("Kom in hit");
-                console.log(this.response)
-                console.log(this.responseText)
-            }
-        }
+        this.basicUrl = url;
     }
 
-    post(body: string) {
-        const url: string = "http://localhost:8080/asdf";
-        this.xhttp.open("POST", url);
-        this.xhttp.send(body);
+    post(url: string, body: any, responseMethod: (response: any) => void): void {
+        const fullUrl: string = this.basicUrl + url;
+        let xhttp: XMLHttpRequest = new XMLHttpRequest();
+        xhttp.onreadystatechange = function (this: XMLHttpRequest, ev: Event) {
+            if (this.readyState == 4 && this.status == 200) {
+                responseMethod(this.response);
+            } else if (this.status != 200) {
+                console.log("Recieved bad status, status = " + this.status);
+            }
+        }
+
+        xhttp.open("POST", fullUrl);
+        xhttp.send(body);
     }
 
     get(body: string) {
-        const url: string = "http://localhost:8080/greeting";
-        console.log("Borde använda body: " + body);
-        this.xhttp.open("GET", url);
-        this.xhttp.send();
+        const url: string = this.basicUrl + "/greeting";
     }
 
     getUrl(): string {
-        return this.url;
+        return "this.url";
     }
 }

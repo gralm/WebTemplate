@@ -32,8 +32,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
         super.handleTextMessage(session, message);
         sessions.forEach(webSocketSession -> {
             try {
-                System.out.println("Sänder " + message + " tillbaka till " + webSocketSession);
-                webSocketSession.sendMessage(message);
+                System.out.println("Sending " + message + " back to " + webSocketSession);
+                webSocketSession.sendMessage(new TextMessage("Get this stuff back"));
             } catch (IOException e) {
                 e.printStackTrace();
             }

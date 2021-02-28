@@ -22,8 +22,8 @@ public class RestController {
     }
 
 
-    @RequestMapping(path = "/asdf", method = POST)
-    public String asdf() {
-        return "Skicka tillbaka detta";
+    @RequestMapping(path = "/postmessage", method = POST)
+    public String postMessage() {
+        return "Get this post back";
     }
 }
