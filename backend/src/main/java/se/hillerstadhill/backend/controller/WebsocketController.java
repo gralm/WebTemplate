@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 /*
 Trying example from
 https://www.javainuse.com/spring/boot-websocket
-Using Websockets without stomp i think
+Using Websockets without stomp
  */
 
 @Controller
