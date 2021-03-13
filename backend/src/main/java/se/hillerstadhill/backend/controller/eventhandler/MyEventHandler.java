@@ -3,6 +3,7 @@ package se.hillerstadhill.backend.controller.eventhandler;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Component
+@Slf4j
 public class MyEventHandler implements EventHandler {
     private TreeMap<Long, Event> treeMap;
     private Timer timer;
@@ -28,11 +30,11 @@ public class MyEventHandler implements EventHandler {
     public void printTreemap(String mess) {
         if (lock.tryLock()) {
             for (Map.Entry<Long, Event> asdf : treeMap.entrySet()) {
-                System.out.println(mess + ": " + asdf.getKey() + ", " + asdf.getValue().refId);
+                log.info(mess + ": " + asdf.getKey() + ", " + asdf.getValue().refId);
             }
             lock.unlock();
         } else {
-            System.out.println("Gick inte att locka för utskrift");
+            log.info("Gick inte att locka för utskrift");
         }
     }
 

@@ -1,5 +1,6 @@
 package se.hillerstadhill.backend.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
@@ -10,11 +11,12 @@ Using Websockets without stomp
  */
 
 @Controller
+@Slf4j
 public class WebsocketController {
     @MessageMapping("/hello")
     public String greeting(String message) throws InterruptedException {
         Thread.sleep(500);
-        System.out.println("Tog emot: " + message);
+        log.info("Received: " + message);
         return "Greeting";
     }
 }

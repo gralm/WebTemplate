@@ -15,3 +15,14 @@ Backend runs a Spring Boot web server on port 8080
 Maven
 Websockets without Stomp with methods for connection, disconnection, receiving- and delivering messages 
 Rest-service examples using a GET and a POST message
+
+
+## Google findings
+
+### websockets
+Trying example from
+https://www.javainuse.com/spring/boot-websocket
+Using Websockets without stomp
+
+### logging
+https://www.baeldung.com/spring-boot-logging
