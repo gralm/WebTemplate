@@ -16,7 +16,6 @@ Maven
 Websockets without Stomp with methods for connection, disconnection, receiving- and delivering messages 
 Rest-service examples using a GET and a POST message
 
-
 ## Google findings
 
 ### websockets
