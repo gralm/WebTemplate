@@ -25,3 +25,6 @@ Using Websockets without stomp
 
 ### logging
 https://www.baeldung.com/spring-boot-logging
+
+### databases
+https://betterprogramming.pub/building-a-spring-boot-rest-api-part-iii-integrating-mysql-database-and-jpa-81391404046a
