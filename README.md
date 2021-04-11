@@ -28,3 +28,6 @@ https://www.baeldung.com/spring-boot-logging
 
 ### databases
 https://betterprogramming.pub/building-a-spring-boot-rest-api-part-iii-integrating-mysql-database-and-jpa-81391404046a
+Save username and passwords as evnironment variables in ~/.profile
+`export DB_USER="root"`
+`export DB_PASS="password"`

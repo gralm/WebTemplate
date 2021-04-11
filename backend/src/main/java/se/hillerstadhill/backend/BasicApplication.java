@@ -24,7 +24,7 @@ public class BasicApplication {
 	public CommandLineRunner demo(CustomerRepository repository, Environment environment) {
 		return (args) -> {
 			// save a few customers
-			log.info("pass = " + environment.getProperty("pass"));
+			log.info("pass = " + environment.getProperty("DB_PASSW"));
 			int rand = (int) (Math.random()* 10000);
 			System.out.println("Bauer" + rand);
 			repository.save(new TutorialsTablen("Jack", "Bauer" + rand));
