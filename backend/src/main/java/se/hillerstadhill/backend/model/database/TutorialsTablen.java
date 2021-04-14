@@ -4,7 +4,6 @@ package se.hillerstadhill.backend.model.database;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,7 +15,7 @@ import java.util.Date;
 public class TutorialsTablen {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tutorialId;
     private String tutorialTitle;
     private String tutorialAuthor;
@@ -31,7 +30,8 @@ public class TutorialsTablen {
     @Column(columnDefinition = "TIMESTAMP")
     private Date submissionDate;
 
-    protected TutorialsTablen() {}
+    protected TutorialsTablen() {
+    }
 
     public TutorialsTablen(String tutorialTitle, String tutorialAuthor) {
         this.tutorialTitle = tutorialTitle;

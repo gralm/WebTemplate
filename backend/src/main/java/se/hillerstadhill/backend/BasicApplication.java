@@ -13,25 +13,20 @@ import se.hillerstadhill.backend.model.database.TutorialsTablen;
 @Slf4j
 public class BasicApplication {
 
-	public static void main(String[] args) {
-		for (String arg: args) {
-			System.out.println("arg: " + arg);
-		}
-		SpringApplication.run(BasicApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BasicApplication.class, args);
+    }
 
-	@Bean
-	public CommandLineRunner demo(CustomerRepository repository, Environment environment) {
-		return (args) -> {
-			// save a few customers
-			log.info("pass = " + environment.getProperty("DB_PASSW"));
-			int rand = (int) (Math.random()* 10000);
-			System.out.println("Bauer" + rand);
-			repository.save(new TutorialsTablen("Jack", "Bauer" + rand));
-			for (TutorialsTablen tutorialstbl : repository.findAll()) {
-				log.info(tutorialstbl.toString());
-			}
-			log.info("id: " +  repository.findByTutorialAuthor("Bauer3148"));
-		};
-	}
+    @Bean
+    public CommandLineRunner demo(CustomerRepository repository, Environment environment) {
+        return (args) -> {
+            int rand = (int) (Math.random() * 10000);
+            System.out.println("Bauer" + rand);
+            repository.save(new TutorialsTablen("Jack", "Bauer" + rand));
+            for (TutorialsTablen tutorialstbl : repository.findAll()) {
+                log.info(tutorialstbl.toString());
+            }
+            log.info("id: " + repository.findByTutorialAuthor("Bauer3148"));
+        };
+    }
 }

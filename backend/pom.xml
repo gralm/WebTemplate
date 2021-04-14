@@ -55,6 +55,16 @@
 			<version>8.0.23</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt
+		To encrypt application.properties passwords
+		-->
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>1.9.3</version>
+		</dependency>
+
+
 		<!-- H2 in memory database, used to simulate database -->
 		<!-- <dependency>
 			<groupId>com.h2database</groupId>
@@ -76,12 +86,6 @@
 		https://stackoverflow.com/questions/52804228/failed-to-load-driver-class-com-mysql-jdbc-driver
 		https://www.baeldung.com/spring-jpa-test-in-memory-database
 		-->
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
