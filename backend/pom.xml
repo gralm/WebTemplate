@@ -55,6 +55,16 @@
 			<version>8.0.23</version>
 		</dependency>
 
+
+		<!-- database -->
+		<!-- H2 in memory database, used to simulate database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt
 		To encrypt application.properties passwords
 		-->

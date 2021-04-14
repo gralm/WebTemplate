@@ -5,7 +5,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import se.hillerstadhill.backend.controller.CustomerRepository;
 import se.hillerstadhill.backend.model.database.TutorialsTablen;
 
@@ -18,7 +17,7 @@ public class BasicApplication {
     }
 
     @Bean
-    public CommandLineRunner demo(CustomerRepository repository, Environment environment) {
+    public CommandLineRunner demo(CustomerRepository repository) {
         return (args) -> {
             int rand = (int) (Math.random() * 10000);
             System.out.println("Bauer" + rand);

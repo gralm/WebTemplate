@@ -17,7 +17,6 @@ public class RestController {
     }
 
     // GET
-
     @RequestMapping("/greeting")
     public String greeting() {
         return "Hello world";
