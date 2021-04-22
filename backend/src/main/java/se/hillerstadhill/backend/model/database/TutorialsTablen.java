@@ -30,6 +30,14 @@ public class TutorialsTablen {
     @Column(columnDefinition = "TIMESTAMP")
     private Date submissionDate;
 
+    /*
+    Used for relations to other tables
+        @OneToOne
+    @JoinColumn(name = "address_id")
+    @RestResource(path = "libraryAddress", rel="address")
+    private Address address;
+     */
+
     protected TutorialsTablen() {
     }
 

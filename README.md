@@ -31,3 +31,12 @@ https://betterprogramming.pub/building-a-spring-boot-rest-api-part-iii-integrati
 Save username and passwords as evnironment variables in ~/.profile
 `export DB_USER="root"`
 `export DB_PASS="password"`
+
+
+### Sessions ###
+To handle sessions correctly.
+The javascript XMLHttpRequest needs to add credentials to be able to request with cookies.
+The SESSION-cookie always seem to be set
+In the RestController
+HttpServletRequest.getCookies()
+HttpServletResponse.addCookie()

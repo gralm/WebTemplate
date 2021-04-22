@@ -56,6 +56,15 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-jdbc</artifactId>
+		</dependency>
+
 		<!-- database -->
 		<!-- H2 in memory database, used to simulate database -->
 		<dependency>

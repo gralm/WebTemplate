@@ -16,7 +16,7 @@ export class RestService {
                 console.log("Recieved bad status, status = " + this.status);
             }
         }
-
+        xhttp.withCredentials = true;
         xhttp.open("POST", fullUrl);
         xhttp.send(body);
     }
