@@ -40,3 +40,14 @@ The SESSION-cookie always seem to be set
 In the RestController
 HttpServletRequest.getCookies()
 HttpServletResponse.addCookie()
+
+### Publish ###
+
+set correct server-ip in frontend/src/services/Properties.ts
+
+Build frontend
+>/WebTemplate/frontend$ npm run build 
+
+copy files in frontend/build/* to /backend/src/main/resources/static/*
+
+java -jar backend-0.0.1-SNAPSHOT.jar password

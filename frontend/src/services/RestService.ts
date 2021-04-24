@@ -13,11 +13,12 @@ export class RestService {
             if (this.readyState == 4 && this.status == 200) {
                 responseMethod(this.response);
             } else if (this.status != 200) {
-                console.log("Recieved bad status, status = " + this.status);
+                console.log("Recieved bad response, status = " + this.status + ", readyState = " + this.readyState);
             }
         }
         xhttp.withCredentials = true;
         xhttp.open("POST", fullUrl);
+        // xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhttp.send(body);
     }
 

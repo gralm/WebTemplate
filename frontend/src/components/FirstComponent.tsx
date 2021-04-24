@@ -1,6 +1,9 @@
-import React, {MouseEventHandler} from 'react';
+import React from 'react';
 import {RestService} from "../services/RestService";
 import {SocketService} from "../services/SocketService";
+import {IP_ADDRESS} from "../services/Properties";
+import {DbPost} from "../model/DbPosts";
+import {DbTableComponent} from "./DbTable";
 
 export interface IProps {
     car: string
@@ -11,6 +14,7 @@ export interface IState {
     restMessage: string;
     socketMessage: string;
     socketOutputMessage: string;
+    dbPosts: DbPost[]
 }
 
 export class FirstComponent extends React.Component<IProps, IState>  {
@@ -20,21 +24,29 @@ export class FirstComponent extends React.Component<IProps, IState>  {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            restService: new RestService("http://localhost:8080/"),
+            restService: new RestService("http://" + IP_ADDRESS + ":8080/"),
             socketService: undefined,
             restMessage: "-",
             socketMessage: "-",
-            socketOutputMessage: "send something to backend"
+            socketOutputMessage: "send something to backend",
+            dbPosts: []
         };
         this.rest = this.rest.bind(this);
+        this.testDB = this.testDB.bind(this);
+        this.isActive = this.isActive.bind(this);
         this.sendSocketMessage = this.sendSocketMessage.bind(this);
         this.connectToWebsocket = this.connectToWebsocket.bind(this);
-        this.isActive = this.isActive.bind(this);
     }
 
     rest(): void {
-        this.state.restService.post("postmessage", {}, (response: any) => {
+        this.state.restService.post("postmessage", this.state.socketOutputMessage, (response: any) => {
             this.setState({restMessage: response})
+        })
+    }
+
+    testDB(): void {
+        this.state.restService.post("testdb", this.state.socketOutputMessage, (response: string) => {
+            this.setState({dbPosts: JSON.parse(response)})
         })
     }
 
@@ -43,7 +55,7 @@ export class FirstComponent extends React.Component<IProps, IState>  {
     }
 
     connectToWebsocket(): void {
-        let newSocketService: SocketService = new SocketService("url");
+        let newSocketService: SocketService = new SocketService();
         this.setState({socketService: newSocketService});
 
         newSocketService.addListener(
@@ -83,7 +95,9 @@ export class FirstComponent extends React.Component<IProps, IState>  {
                 </tbody>
             </table>
             <button onClick={this.rest}>Send POST</button>
-            <button onClick={this.connectToWebsocket}>Connect to websockets:</button>
+            <button onClick={this.testDB}>Update DB</button>
+            <button onClick={this.connectToWebsocket}>Connect to websockets:</button><br />
+            <DbTableComponent dbPosts={this.state.dbPosts}></DbTableComponent>
         </div>);
     }
 }

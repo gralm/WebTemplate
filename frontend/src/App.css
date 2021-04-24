@@ -44,3 +44,19 @@
     transform: rotate(360deg);
   }
 }
+
+/* --------------------- */
+
+.Post-table {
+  font-size: 2vmin;
+}
+
+.Post-table th{
+  border-bottom: 1pt solid #aaa;
+  border-right: 1pt solid #aaa;
+}
+
+.Post-table td{
+  border-top: 1pt solid #aaa;
+  border-left: 1pt solid #aaa;
+}

@@ -17,8 +17,9 @@ public class TutorialsTablen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tutorialId;
-    private String tutorialTitle;
-    private String tutorialAuthor;
+    private String message;
+    private String ip;
+    private String sessionId;
 
     // name must not be set,
     // @Column(name = "submission_dat", columnDefinition = "DATE")
@@ -41,9 +42,10 @@ public class TutorialsTablen {
     protected TutorialsTablen() {
     }
 
-    public TutorialsTablen(String tutorialTitle, String tutorialAuthor) {
-        this.tutorialTitle = tutorialTitle;
-        this.tutorialAuthor = tutorialAuthor;
+    public TutorialsTablen( String message,String ip,String sessionId){
+          this.message = message;
+        this.ip = ip;
+        this.sessionId = sessionId;
         this.submissionDate = new Date();
     }
 }
