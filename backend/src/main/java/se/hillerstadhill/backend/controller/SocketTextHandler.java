@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public class SocketTextHandler extends TextWebSocketHandler {
 
-    private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {

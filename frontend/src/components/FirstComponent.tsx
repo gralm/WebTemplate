@@ -1,7 +1,7 @@
 import React from 'react';
 import {RestService} from "../services/RestService";
 import {SocketService} from "../services/SocketService";
-import {IP_ADDRESS} from "../services/Properties";
+import {IP_ADDRESS, PORT} from "../services/Properties";
 import {DbPost} from "../model/DbPosts";
 import {DbTableComponent} from "./DbTable";
 
@@ -24,7 +24,7 @@ export class FirstComponent extends React.Component<IProps, IState>  {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            restService: new RestService("http://" + IP_ADDRESS + ":8080/"),
+            restService: new RestService("http://" + IP_ADDRESS + ":" + PORT + "/"),
             socketService: undefined,
             restMessage: "-",
             socketMessage: "-",

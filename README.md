@@ -16,6 +16,10 @@ Maven
 Websockets without Stomp with methods for connection, disconnection, receiving- and delivering messages 
 Rest-service examples using a GET and a POST message
 
+### Https
+Securing website with SSL for https
+`https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04`
+
 ## Google findings
 
 ### websockets
@@ -47,7 +51,11 @@ set correct server-ip in frontend/src/services/Properties.ts
 
 Build frontend
 >/WebTemplate/frontend$ npm run build 
+> ( cd frontend ; npm run build )
 
 copy files in frontend/build/* to /backend/src/main/resources/static/*
+> cp -TRv frontend/build/ backend/src/main/resources/static/
 
-java -jar backend-0.0.1-SNAPSHOT.jar password
+> (cd backend ; mvn install)
+
+> java -jar backend-0.0.1-SNAPSHOT.jar password

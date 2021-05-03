@@ -62,7 +62,7 @@ public class RestController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        System.out.println("body: " + body);
+        log.info("body: " + body);
         printCookies(request);
         log.info("request: " + request.getSession().getId());
         log.info("ip: " + getIpAdderss(request));
@@ -78,11 +78,12 @@ public class RestController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        System.out.println("body: " + body);
+        log.info("body: " + body);
         printCookies(request);
         log.info("request: " + request.getSession().getId());
 
         /*
+        TODO: Warning message in browser:
         Cookie “my” will be soon rejected because it has the “SameSite” attribute set to “None” or an invalid value,
         without the “secure” attribute. To know more about the “SameSite“ attribute, read
         https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie/SameSite

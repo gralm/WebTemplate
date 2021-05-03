@@ -24,7 +24,6 @@ class MyEventHandlerTest {
         now = System.currentTimeMillis();
         eventAction = refId -> {
             events.add(new LocalEvent(System.currentTimeMillis(), refId));
-            //System.out.println("Occurence: " + (System.currentTimeMillis()-now)  + ", " + refId);
         };
     }
 

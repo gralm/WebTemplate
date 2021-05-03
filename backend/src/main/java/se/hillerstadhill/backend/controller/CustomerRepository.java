@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface CustomerRepository extends CrudRepository<TutorialsTablen, Long> {
     TutorialsTablen findById(long id);
-    // List<TutorialsTablen> findByTutorialTitle(String tutorialTitle);
+    List<TutorialsTablen> findBySessionId(String sessionId);
     // List<TutorialsTablen> findByTutorialAuthor(String tutorialAuthor);
 }

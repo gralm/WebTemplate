@@ -1,11 +1,11 @@
-import {IP_ADDRESS} from "./Properties";
+import {IP_ADDRESS, PORT} from "./Properties";
 
 export class SocketService {
     ws: WebSocket;
     listeners: ((message: string) => void)[] = []
 
     constructor() {
-        this.ws = new WebSocket('ws://' + IP_ADDRESS + ':8080/user');
+        this.ws = new WebSocket('ws://' + IP_ADDRESS + ':' + PORT + '/user');
 
         this.ws.onmessage = (ev: MessageEvent): void => {
             this.listeners.forEach(listener => {
