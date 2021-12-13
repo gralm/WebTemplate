@@ -19,12 +19,14 @@ public class SocketTextHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("afterConnectionEstablished");
         sessions.add(session);
+        log.info("session: " + sessionToString(session));
         super.afterConnectionEstablished(session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         log.info("afterConnectionClosed");
+        log.info("session: " + sessionToString(session));
         sessions.remove(session);
         super.afterConnectionClosed(session, status);
     }
@@ -33,6 +35,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         log.info("handleTextMessage: " + message);
         log.info("handleTextMessage: " + message.getPayload());
+        log.info("session: " + sessionToString(session));
         super.handleTextMessage(session, message);
         sessions.forEach(webSocketSession -> {
             try {
@@ -42,5 +45,10 @@ public class SocketTextHandler extends TextWebSocketHandler {
                 e.printStackTrace();
             }
         });
+    }
+
+    private String sessionToString(WebSocketSession session) {
+        return session == null ? "null" : session.getId() + ", " + session.getLocalAddress() + ", "
+                + session.getRemoteAddress() + ", " + session.getUri();
     }
 }

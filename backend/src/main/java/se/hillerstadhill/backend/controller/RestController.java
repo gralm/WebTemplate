@@ -23,7 +23,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class RestController {
     private CustomerRepository repository;
 
-    public RestController(CustomerRepository repository) {
+    public RestController(
+            CustomerRepository repository
+    ) {
         this.repository = repository;
     }
 
@@ -35,7 +37,6 @@ public class RestController {
     private void createCookie(HttpServletResponse response, String name, String value) {
         response.addCookie(new Cookie(name, value));
     }
-
     private void printCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -47,6 +48,7 @@ public class RestController {
             log.info("cookie: " + cookie.getName() + "; " + cookie.getValue());
         }
     }
+
 
     // GET
     @RequestMapping("/greeting")
@@ -62,12 +64,12 @@ public class RestController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+
         log.info("body: " + body);
         printCookies(request);
         log.info("request: " + request.getSession().getId());
         log.info("ip: " + getIpAdderss(request));
         response.addCookie(new Cookie("my", "cookie"));
-        // repository.save(new TutorialsTablen());
         return new ResponseEntity<>("Get this post back", HttpStatus.OK);
     }
 
@@ -88,6 +90,7 @@ public class RestController {
         without the “secure” attribute. To know more about the “SameSite“ attribute, read
         https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie/SameSite
          */
+
         response.addCookie(new Cookie("my", "cookie"));
         TutorialsTablen row = new TutorialsTablen(
                 body,

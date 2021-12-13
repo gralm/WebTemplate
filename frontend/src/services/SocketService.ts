@@ -1,11 +1,15 @@
-import {IP_ADDRESS, PORT} from "./Properties";
+import {IP_ADDRESS, PORT, WS} from "./Properties";
+import {print} from "./PrintFile";
 
 export class SocketService {
     ws: WebSocket;
     listeners: ((message: string) => void)[] = []
+    active: boolean = false
 
     constructor() {
-        this.ws = new WebSocket('ws://' + IP_ADDRESS + ':' + PORT + '/user');
+        const address: string = WS + '://' + IP_ADDRESS + ':' + PORT + '/user';
+        print('connecting: "' + address + '"')
+        this.ws = new WebSocket(address);
 
         this.ws.onmessage = (ev: MessageEvent): void => {
             this.listeners.forEach(listener => {
@@ -15,17 +19,19 @@ export class SocketService {
 
         // onerror: ((this: WebSocket, ev: Event) => any) | null;
         this.ws.onerror = (ev: Event): void => {
-            console.log("onerror: " + JSON.stringify(ev))
+            print("onerror: " + JSON.stringify(ev))
         }
 
         // onclose: ((this: WebSocket, ev: CloseEvent) => any) | null;
         this.ws.onclose = (ev: CloseEvent): void => {
-            console.log("onclose: " + JSON.stringify(ev))
+            print("onclose: " + JSON.stringify(ev))
+            this.active = false;
         }
 
         // onopen: ((this: WebSocket, ev: Event) => any) | null;
         this.ws.onopen = (ev: Event): void => {
-            console.log("onopen: " + JSON.stringify(ev))
+            print("onopen: " + JSON.stringify(ev))
+            this.active = true;
         }
     }
 
@@ -38,7 +44,6 @@ export class SocketService {
     }
 
     isActive(): boolean {
-        return this.ws !== undefined
+        return this.active;
     }
-
 }

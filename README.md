@@ -59,3 +59,15 @@ copy files in frontend/build/* to /backend/src/main/resources/static/*
 > (cd backend ; mvn install)
 
 > java -jar backend-0.0.1-SNAPSHOT.jar password
+
+## HTTPS Certificates
+Show information in certificate
+openssl x509 -in mittCert.pem -text
+
+Create certificate
+openssl req -x509 -newkey rsa:4096 -keyout myKey.pem -out mittCert.pem -days 365 -nodes
+
+Create a keystore from your cert:
+openssl pkcs12 -export -out keyStore.p12 -inkey myKey.pem -in cert.pem
+Make sure the keystore filename does not have any capital letters because spring boot has trouble finding the file :p 
+keyStore.p12 should be renamed to keystore.p12

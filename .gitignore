@@ -2,3 +2,6 @@
 *.iml
 */target/*
 logs/
+certs/
+buildUpload.sh
+backend/src/main/resources/static/*

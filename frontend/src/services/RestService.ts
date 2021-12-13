@@ -1,3 +1,5 @@
+import {HTTP, PORT} from "./Properties";
+import {print} from "./PrintFile";
 
 export class RestService {
     basicUrl: string;
@@ -8,12 +10,15 @@ export class RestService {
 
     post(url: string, body: any, responseMethod: (response: any) => void): void {
         const fullUrl: string = this.basicUrl + url;
+        print("Sending to url: " + fullUrl);
+        print("HTTP = " + HTTP);
+        print("PORT = " + PORT);
         let xhttp: XMLHttpRequest = new XMLHttpRequest();
         xhttp.onreadystatechange = function (this: XMLHttpRequest, ev: Event) {
             if (this.readyState == 4 && this.status == 200) {
                 responseMethod(this.response);
             } else if (this.status != 200) {
-                console.log("Recieved bad response, status = " + this.status + ", readyState = " + this.readyState);
+                print("Recieved bad response, status = " + this.status + ", readyState = " + this.readyState);
             }
         }
         xhttp.withCredentials = true;

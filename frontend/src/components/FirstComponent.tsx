@@ -1,9 +1,10 @@
 import React from 'react';
 import {RestService} from "../services/RestService";
 import {SocketService} from "../services/SocketService";
-import {IP_ADDRESS, PORT} from "../services/Properties";
+import {HTTP, IP_ADDRESS, PORT} from "../services/Properties";
 import {DbPost} from "../model/DbPosts";
 import {DbTableComponent} from "./DbTable";
+import {Print} from "./Print";
 
 export interface IProps {
     car: string
@@ -24,7 +25,7 @@ export class FirstComponent extends React.Component<IProps, IState>  {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            restService: new RestService("http://" + IP_ADDRESS + ":" + PORT + "/"),
+            restService: new RestService(HTTP + "://" + IP_ADDRESS + ":" + PORT + "/"),
             socketService: undefined,
             restMessage: "-",
             socketMessage: "-",
@@ -98,6 +99,7 @@ export class FirstComponent extends React.Component<IProps, IState>  {
             <button onClick={this.testDB}>Update DB</button>
             <button onClick={this.connectToWebsocket}>Connect to websockets:</button><br />
             <DbTableComponent dbPosts={this.state.dbPosts}></DbTableComponent>
+            <Print></Print>
         </div>);
     }
 }
