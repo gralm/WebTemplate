@@ -37,6 +37,7 @@ export class FirstComponent extends React.Component<IProps, IState>  {
         this.isActive = this.isActive.bind(this);
         this.sendSocketMessage = this.sendSocketMessage.bind(this);
         this.connectToWebsocket = this.connectToWebsocket.bind(this);
+        this.disconnectToWebsocket = this.disconnectToWebsocket.bind(this);
     }
 
     rest(): void {
@@ -60,8 +61,15 @@ export class FirstComponent extends React.Component<IProps, IState>  {
         this.setState({socketService: newSocketService});
 
         newSocketService.addListener(
-            (message: string) => this.setState({socketMessage: message})
+            (message: string) => {
+                console.log("Fick socket message: " + message);
+                this.setState({socketMessage: message});
+            }
         );
+    }
+
+    disconnectToWebsocket(): void {
+        this.state?.socketService?.closeSocketConnection();
     }
 
     isActive(): boolean {
@@ -97,7 +105,8 @@ export class FirstComponent extends React.Component<IProps, IState>  {
             </table>
             <button onClick={this.rest}>Send POST</button>
             <button onClick={this.testDB}>Update DB</button>
-            <button onClick={this.connectToWebsocket}>Connect to websockets:</button><br />
+            <button onClick={this.connectToWebsocket}>Connect to websockets:</button>
+            <button onClick={this.disconnectToWebsocket}>Disconnect to websockets:</button><br />
             <DbTableComponent dbPosts={this.state.dbPosts}></DbTableComponent>
             <Print></Print>
         </div>);
