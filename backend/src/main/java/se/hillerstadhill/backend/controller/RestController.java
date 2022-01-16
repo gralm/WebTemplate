@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import se.hillerstadhill.backend.model.User;
 import se.hillerstadhill.backend.model.database.TutorialsTablen;
 
 import javax.servlet.http.Cookie;
@@ -15,38 +16,28 @@ import javax.servlet.http.HttpSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static se.hillerstadhill.backend.controller.UserController.COOKIE_UUID_NAME;
 
 @org.springframework.web.bind.annotation.RestController
 @Slf4j
 public class RestController {
     private CustomerRepository repository;
+    private UserController userController;
 
     public RestController(
-            CustomerRepository repository
+            CustomerRepository repository,
+            UserController userController
     ) {
         this.repository = repository;
+        this.userController = userController;
     }
 
     private String getIpAdderss(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         return ipAddress == null ? request.getRemoteAddr() : ipAddress;
-    }
-
-    private void createCookie(HttpServletResponse response, String name, String value) {
-        response.addCookie(new Cookie(name, value));
-    }
-    private void printCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            log.info("cookies = null");
-            return;
-        }
-        log.info("num of cookies: " + cookies.length);
-        for (Cookie cookie : cookies) {
-            log.info("cookie: " + cookie.getName() + "; " + cookie.getValue());
-        }
     }
 
 
@@ -57,6 +48,28 @@ public class RestController {
         return "Hello world";
     }
 
+/*
+    // Override default loading index.html from static resources,
+    // makes it possible to create cookies when page loads
+    @RequestMapping("/")
+    public String greeting(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        User user = handleUser(request, response);
+        log.info("User = " + user);
+        try {
+            return Files.readString(Paths.get(getClass().getResource("/static/index.html").toURI()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return "cant load index.html";
+        //return "Hello world";
+    }*/
+
+
     @CrossOrigin(allowCredentials = "true", originPatterns = "*")
     @RequestMapping(path = "/postmessage", method = POST)
     public ResponseEntity<String> postMessage(
@@ -64,13 +77,14 @@ public class RestController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-
+        User user = handleUser(request, response);
+        log.info("User: " + user);
         log.info("body: " + body);
-        printCookies(request);
-        log.info("request: " + request.getSession().getId());
-        log.info("ip: " + getIpAdderss(request));
-        response.addCookie(new Cookie("my", "cookie"));
-        return new ResponseEntity<>("Get this post back", HttpStatus.OK);
+        String responseMessage = "skicka tillbaka det här";
+
+
+        // hander.fixReply()
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
     @CrossOrigin(allowCredentials = "true", originPatterns = "*")
@@ -80,9 +94,9 @@ public class RestController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        log.info("body: " + body);
-        printCookies(request);
-        log.info("request: " + request.getSession().getId());
+        User user = handleUser(request, response);
+
+        log.info("User: " + user);
 
         /*
         TODO: Warning message in browser:
@@ -103,5 +117,54 @@ public class RestController {
         List<TutorialsTablen> tutorialsTablens = new ArrayList<>();
         asdf.forEach(tutorialsTablen -> tutorialsTablens.add(tutorialsTablen));
         return new ResponseEntity<>(tutorialsTablens, HttpStatus.OK);
+    }
+
+
+    private void createCookie(HttpServletResponse response, String name, String value) {
+        response.addCookie(new Cookie(name, value));
+    }
+    private void printCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            log.info("cookies = null");
+            return;
+        }
+        log.info("num of cookies: " + cookies.length);
+        for (Cookie cookie : cookies) {
+            log.info("cookie: " + cookie.getName() + "; " + cookie.getValue());
+        }
+    }
+
+    private UUID getUuidCookie(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie: request.getCookies()) {
+            if (cookie.getName().equals(COOKIE_UUID_NAME)) {
+                try {
+                    return UUID.fromString(cookie.getValue());
+                } catch (IllegalArgumentException e) {
+                    log.error("getUuidCookie failed: in cookie: " + cookie.getValue());
+                }
+            }
+        }
+        return null;
+    }
+
+    private User handleUser(HttpServletRequest request, HttpServletResponse response) {
+        User user = this.userController.getUserByRequestCookie(request);
+        String ip = getIpAdderss(request);
+        UUID frontendUuid = getUuidCookie(request);
+        if (user != null) {
+            user.update();
+        } else if (frontendUuid == null) {
+            user = new User(null, null, ip);
+            userController.createUser(user);
+            response.addCookie(new Cookie(COOKIE_UUID_NAME, user.getUuid().toString()));
+        } else {
+            user = new User(frontendUuid, null, ip);
+            userController.createUser(user);
+        }
+        return user;
     }
 }

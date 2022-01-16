@@ -7,5 +7,6 @@ export function print(value: string): void {
         console.log(value);
     } else {
         prints.push(value);
+        console.log(value);
     }
 }
