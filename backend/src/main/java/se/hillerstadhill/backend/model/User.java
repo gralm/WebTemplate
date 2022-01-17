@@ -18,11 +18,10 @@ public class User {
     @NonNull
     private UUID uuid;
 
-    // TODO: Should be socketSession
     private WebSocketSession socketSession;
     private String remoteIp;
-    private LocalDateTime creationTime;
-    private LocalDateTime lastAppearance;
+    private long creationTime;
+    private long lastAppearance;
 
     public User(UUID uuid, WebSocketSession socketSession, String remoteIp) {
         this.id = idCounter++;
@@ -34,7 +33,7 @@ public class User {
     }
 
     public User update() {
-        lastAppearance = LocalDateTime.now();
+        lastAppearance = System.currentTimeMillis();
         return this;
     }
 

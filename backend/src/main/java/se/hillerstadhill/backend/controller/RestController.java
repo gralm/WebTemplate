@@ -3,9 +3,7 @@ package se.hillerstadhill.backend.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import se.hillerstadhill.backend.model.User;
 import se.hillerstadhill.backend.model.database.TutorialsTablen;
 
@@ -14,10 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static se.hillerstadhill.backend.controller.UserController.COOKIE_UUID_NAME;
 
@@ -48,10 +51,10 @@ public class RestController {
         return "Hello world";
     }
 
-/*
     // Override default loading index.html from static resources,
     // makes it possible to create cookies when page loads
-    @RequestMapping("/")
+    @CrossOrigin(allowCredentials = "true", originPatterns = "*")
+    @RequestMapping(path = "/", method = GET)
     public String greeting(
             HttpServletRequest request,
             HttpServletResponse response
@@ -61,13 +64,28 @@ public class RestController {
         try {
             return Files.readString(Paths.get(getClass().getResource("/static/index.html").toURI()));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("cant load index.html", e);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            log.error("cant load index.html", e);
         }
         return "cant load index.html";
-        //return "Hello world";
-    }*/
+    }
+
+
+    @CrossOrigin(allowCredentials = "true", originPatterns = "*")
+    @PostMapping(value = "api/{cmd}")
+    public String command(
+            @PathVariable(value = "cmd") String command,
+            @RequestBody String body,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        User user = handleUser(request, response);
+        log.info("user = " + user);
+        log.info("Jag kom in här, cmd = " + command);
+        log.info("Jag kom in här, cmd2 = " + body);
+        return command;
+    }
 
 
     @CrossOrigin(allowCredentials = "true", originPatterns = "*")
@@ -159,6 +177,7 @@ public class RestController {
             user.update();
         } else if (frontendUuid == null) {
             user = new User(null, null, ip);
+            log.info("new user created with uuid");
             userController.createUser(user);
             response.addCookie(new Cookie(COOKIE_UUID_NAME, user.getUuid().toString()));
         } else {

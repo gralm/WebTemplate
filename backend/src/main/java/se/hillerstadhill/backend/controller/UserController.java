@@ -1,8 +1,5 @@
 package se.hillerstadhill.backend.controller;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
@@ -10,107 +7,92 @@ import se.hillerstadhill.backend.model.User;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 // TODO: Make this class control all active users by cookies, IP or sessionID
 @Component
 @Slf4j
 public class UserController {
     public static final String COOKIE_UUID_NAME = "uuid_name";
+    private static final long CLEAN_USERS_PERIOD = 1000 * 3600;
 
-    private LinkedList<User> users;
+    // TODO: change to Map<UUID, User> users
+    private Map<UUID, User> users;
     // private ArrayList<User> bannedUsers;
 
     public UserController() {
-        users = new LinkedList<>();
+        users = new HashMap<>();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                removeInactiveUsers();
+            }
+        }, CLEAN_USERS_PERIOD, CLEAN_USERS_PERIOD);
     }
 
-    public User getUser(WebSocketSession socketSession) {
-        if (socketSession == null) {
+    public User getUserBySession(WebSocketSession socketSession) {
+        if (socketSession == null || socketSession.getId() == null) {
             return null;
         }
+        Optional<User> oUser;
+        synchronized (users) {
+            oUser = this.users.entrySet().stream()
+                    .map(entry -> entry.getValue())
+                    .filter(entry -> entry.getSocketSession() != null && entry.getSocketSession().getId() != null
+                            && entry.getSocketSession().getId().equals(socketSession.getId()))
 
-        User user = getUserBySession(socketSession);
-        if (user != null) {
-            return user;
+                    .findFirst();
         }
-
-        // TODO: Do this in a better way
-        String remoteIP = socketSession.getRemoteAddress().getHostString();
-        log.info("remoteIP: " + remoteIP);
-        user = getUserByIp(remoteIP);
-
-        if (user != null) {
-            user.setSocketSession(socketSession);
-        }
-        return user;
+        return oUser.isPresent() ? oUser.get() : null;
     }
 
     public User getUser(UUID uuid) {
-        if (uuid == null) {
-            return null;
+        synchronized (users) {
+            return this.users.get(uuid);
         }
-        for (User user: users) {
-            if (user.getUuid().equals(uuid)) {
-                return user;
-            }
-        }
-        return null;
     }
 
     public User turnOffSocketConnection(WebSocketSession socketSession) {
         if (socketSession == null) {
+            log.error("turnOffSocketConnection(null);");
             return null;
         }
-        ListIterator<User> userIter = users.listIterator();
-        while (userIter.hasNext()) {
-            User user = userIter.next();
-            user.setSocketSession(null);
-            return user;
-        }
-        return null;
-    }
-
-    public User getUserBySession(WebSocketSession socketSession, @NonNull UUID uuid) {
-        User userSocket = getUserBySession(socketSession);
-        User userUuid = getUser(uuid);
-        if (userSocket == null) {
-            if (userUuid != null) {
-                userUuid.setSocketSession(socketSession);
-            }
-            return userUuid;
-        } else if (userSocket.getUuid().equals(uuid)) {
-            return userSocket;
-        } else {
-            log.error("error in getUserBySession(WebSocketSession socketSession, @NonNull UUID uuid)"
-                    + "socketSession(" + socketSession + ") matches " + userSocket + " but its uuid is no equal to = "
-                    + uuid);
-        }
-        return null;
-    }
-
-    public User getUserBySession(WebSocketSession socketSession) {
-        if (socketSession == null) {
+        User user = getUserBySession(socketSession);
+        if (user == null) {
             return null;
         }
-        Optional<User> oUser = this.users.stream()
-                .filter(user -> user.getSocketSession() != null && socketSession.getId().equals(user.getSocketSession().getId()))
-                .findFirst();
-        return oUser.isPresent() ? oUser.get() : null;
+        user.setSocketSession(null);
+        return user;
+    }
+
+    public User turnOnSocketConnection(WebSocketSession socketSession) {
+        if (socketSession != null) {
+            log.error("turnOnSocketConnection(not null); " + socketSession);
+            return null;
+        }
+        User user = getUserBySession(socketSession);
+        if (user == null) {
+            log.error("turnOnSocketConnection for non existing user");
+            return null;
+        }
+        user.setSocketSession(socketSession);
+        return user;
     }
 
     public User getUserByIp(String remoteIP) {
         if (remoteIP == null) {
             return null;
         }
-        for (User user: users) {
-            if (user.getRemoteIp().equals(remoteIP)) {
-                return user;
-            }
+        Optional<User> uuid;
+
+        synchronized (users) {
+            uuid = this.users.entrySet().stream()
+                    .filter(entry -> entry.getValue().getRemoteIp().equals(remoteIP))
+                    .map(entry -> entry.getValue()).findFirst();
         }
-        return null;
+
+        return uuid.isPresent() ? uuid.get() : null;
     }
 
     public User getUserByRequestCookie(HttpServletRequest servletRequest) {
@@ -120,19 +102,38 @@ public class UserController {
 
         for (Cookie cookie : servletRequest.getCookies()) {
             if (cookie.getName().equals(COOKIE_UUID_NAME)) {
-                Optional<User> oUser = this.users.stream().filter(user -> cookie.getValue().equals(user.getUuid().toString())).findFirst();
-                return oUser.isPresent() ? oUser.get() : null;
+                try {
+                    UUID uuid = UUID.fromString(cookie.getValue());
+                    return getUser(uuid);
+                } catch (IllegalArgumentException e) {
+                    log.error("UUID.fromString(" + cookie.getValue() + ") failed, ", e);
+                }
+                return null;
             }
         }
         return null;
     }
 
     public void createUser(User user) {
-        users.add(user);
+        synchronized (users) {
+            users.put(user.getUuid(), user);
+        }
     }
 
     private String getIpAdderss(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         return ipAddress == null ? request.getRemoteAddr() : ipAddress;
+    }
+
+    private void removeInactiveUsers() {
+        long timeNow = System.currentTimeMillis();
+        HashMap<UUID, User> newUserMap = new HashMap<>();
+
+        synchronized (users) {
+            this.users.entrySet().stream()
+                    .filter(entry -> entry.getValue().getLastAppearance() < timeNow - CLEAN_USERS_PERIOD)
+                    .forEach(entry -> newUserMap.put(entry.getKey(), entry.getValue()));
+            this.users = newUserMap;
+        }
     }
 }

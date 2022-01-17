@@ -131,6 +131,7 @@ public class MyEventHandler implements EventHandler {
     @ToString
     private static class Event {
         long timeMs;
+        // Two reference ids can not occupy the EventHandlerList
         int refId;
         EventAction eventAction;
     }

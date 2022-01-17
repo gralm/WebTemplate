@@ -1,4 +1,4 @@
-import {IP_ADDRESS, PORT, WS} from "./Properties";
+import {ADDRESS_PORT, WS} from "./Properties";
 import {print} from "./PrintFile";
 import {getUserCookie} from "./CookieService";
 import {SoMessage, SoType} from "../model/SoMessage";
@@ -9,7 +9,7 @@ export class SocketService {
     active: boolean = false
 
     constructor() {
-        const address: string = WS + '://' + IP_ADDRESS + ':' + PORT + '/user';
+        const address: string = WS + '://' + ADDRESS_PORT + '/user';
         print('connecting: "' + address + '"')
         try {
             this.ws = new WebSocket(address);

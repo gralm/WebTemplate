@@ -4,4 +4,5 @@
 logs/
 certs/
 buildUpload.sh
+login.sh
 backend/src/main/resources/static/*

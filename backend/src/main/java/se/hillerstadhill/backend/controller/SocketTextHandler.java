@@ -30,7 +30,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("afterConnectionEstablished");
-        User user = this.userController.getUser(session);
+        User user = this.userController.getUserBySession(session);
         log.info("user: "+ user);
         if (user != null) {
             user.update();
@@ -44,7 +44,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         log.info("afterConnectionClosed (" + status + ")");
         log.info("session: " + sessionToString(session));
-        User user = userController.getUser(session);
+        User user = userController.getUserBySession(session);
         log.info("user: " + user);
         userController.turnOffSocketConnection(session);
         sessions.remove(session);
@@ -64,12 +64,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
         }
 
         // if message contains UUID but uuid is not in memory
-        User user;
-        User userByUuid = this.userController.getUser(siMessage.getUUID());
-        User userBySession = this.userController.getUser(session);
-        log.info("userByUuid: " + userByUuid);
-        log.info("userBySession: "+ userBySession);
-        if (userByUuid == null && userBySession == null) {
+        User user = getUser(session, siMessage);
+        if (user == null) {
             // this message should be CONNECT_USER
             if (!siMessage.getType().equals(CONNECT_USER.name())) {
                 log.warn("siMessage should connect with CONNECT_USER but siMessage.type = " + siMessage.getType());
@@ -84,19 +80,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
             log.info("newUserTextMessage: " + newUserTextMessage);
             session.sendMessage(newUserTextMessage);
             userController.createUser(user);
-        } else if (userBySession == null) {
-            log.info("found user by uuid");
-            user = userByUuid;
-        } else if (userByUuid == null) {
-            log.info("found user by session");
-            user = userBySession;
-        } else if (!userBySession.equals(userByUuid)) {
-            log.error("userByUuid = " + userByUuid + " != userBySession = " + userBySession);
-            return;
-        } else {
-            // userByUuid = userBySession
-            user = userBySession;
         }
+
         SiType siType = SiType.valueOf(siMessage.getType());
         switch (siType) {
             case MESSAGE:
@@ -162,5 +147,26 @@ public class SocketTextHandler extends TextWebSocketHandler {
     private String sessionToString(WebSocketSession session) {
         return session == null ? "null" : session.getId() + ", " + session.getLocalAddress() + ", "
                 + session.getRemoteAddress() + ", " + session.getUri();
+    }
+
+    private User getUser(WebSocketSession session, SiMessage siMessage) {
+        User userByUuid = this.userController.getUser(siMessage.getUUID());
+        User userBySession = this.userController.getUserBySession(session);
+        log.info("userByUuid: " + userByUuid);
+        log.info("userBySession: "+ userBySession);
+        if (userBySession == null) {
+            if (userByUuid != null) {
+                log.warn("found userByUuid = " + userByUuid.getId() + ", but no userBySession. Return userByUuid");
+                return userByUuid;
+            }
+            return null;
+        } else if (userByUuid == null) {
+            log.info("found user by session");
+            return userBySession;
+        } else if (!userBySession.equals(userByUuid)) {
+            log.warn("userByUuid = " + userByUuid + " != userBySession = " + userBySession);
+            return userBySession;
+        }
+        return userBySession;
     }
 }

@@ -1,18 +1,16 @@
-import {HTTP, PORT} from "./Properties";
+import {ADDRESS_PORT, HTTP, PORT} from "./Properties";
 import {print} from "./PrintFile";
 
 export class RestService {
     basicUrl: string;
 
-    constructor(url: string) {
-        this.basicUrl = url;
+    constructor() {
+        this.basicUrl = HTTP + "://" + ADDRESS_PORT + "/";
     }
 
     post(url: string, body: any, responseMethod: (response: any) => void): void {
         const fullUrl: string = this.basicUrl + url;
         print("Sending to url: " + fullUrl);
-        print("HTTP = " + HTTP);
-        print("PORT = " + PORT);
         let xhttp: XMLHttpRequest = new XMLHttpRequest();
         xhttp.onreadystatechange = function (this: XMLHttpRequest, ev: Event) {
             if (this.readyState == 4 && this.status == 200) {
